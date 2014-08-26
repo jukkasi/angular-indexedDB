@@ -209,26 +209,30 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                                $rootScope.$apply(function(){
                                     d.notify(e.target.result);
                                 }); 
-                            }
+                            };
                             req.onerror = function(e) {
                                 $rootScope.$apply(function(){
                                     d.reject(e.target.result);
                                 });
                             };
                             req.onsuccess = function(e) {
-                                if(i == data.length - 1) {
-                                    $rootScope.$apply(function(){
-                                        d.resolve(e.target.result);
-                                    });
-                                }
+                                store.transaction.oncomplete = function() {
+                                    if(i == data.length - 1) {
+                                        $rootScope.$apply(function(){
+                                            d.resolve(e.target.result);
+                                        });
+                                    }
+                                };
                             };
                         });
                     } else {
                         req = store.add(data);
                         req.onsuccess = req.onerror = function(e) {
-                            $rootScope.$apply(function(){
-                                d.resolve(e.target.result);
-                            });
+                            store.transaction.oncomplete = function() {
+                                $rootScope.$apply(function(){
+                                    d.resolve(e.target.result);
+                                });
+                            };
                         };
                     }
                     return d.promise;
@@ -258,26 +262,30 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                                $rootScope.$apply(function(){
                                     d.notify(e.target.result);
                                 }); 
-                            }
+                            };
                             req.onerror = function(e) {
                                 $rootScope.$apply(function(){
                                     d.reject(e.target.result);
                                 });
                             };
                             req.onsuccess = function(e) {
-                                if(i == data.length - 1) {
-                                    $rootScope.$apply(function(){
-                                        d.resolve(e.target.result);
-                                    });
-                                }
+                                store.transaction.oncomplete = function() {
+                                    if(i == data.length - 1) {
+                                        $rootScope.$apply(function(){
+                                            d.resolve(e.target.result);
+                                        });
+                                    }
+                                };
                             };
                         });
                     } else {
                         req = store.put(data);
                         req.onsuccess = req.onerror = function(e) {
-                            $rootScope.$apply(function(){
-                                d.resolve(e.target.result);
-                            });
+                            store.transaction.oncomplete = function() {
+                                $rootScope.$apply(function(){
+                                    d.resolve(e.target.result);
+                                });
+                            };
                         };
                     }
                     return d.promise;
@@ -299,9 +307,11 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                 return this.internalObjectStore(this.storeName, READWRITE).then(function(store){
                     var req = store.delete(key);
                     req.onsuccess = req.onerror = function(e) {
-                        $rootScope.$apply(function(){
-                            d.resolve(e.target.result);
-                        });
+                        store.transaction.oncomplete = function() {
+                            $rootScope.$apply(function(){
+                                d.resolve(e.target.result);
+                            });
+                        };
                     };
                     return d.promise;
                 });
@@ -321,9 +331,11 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                 return this.internalObjectStore(this.storeName, READWRITE).then(function(store){
                     var req = store.clear();
                     req.onsuccess = req.onerror = function(e) {
-                        $rootScope.$apply(function(){
-                            d.resolve(e.target.result);
-                        });
+                        store.transaction.oncomplete = function() {
+                            $rootScope.$apply(function(){
+                                d.resolve(e.target.result);
+                            });
+                        };
                     };
                     return d.promise;
                 });
