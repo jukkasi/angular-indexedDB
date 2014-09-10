@@ -205,14 +205,9 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                     if (angular.isArray(data)) {
                         data.forEach(function(item, i){
                             req = store.add(item);
-                            req.onnotify = function(e) {
-                               $rootScope.$apply(function(){
-                                    d.notify(e.target.result);
-                                }); 
-                            };
                             req.onerror = function(e) {
                                 $rootScope.$apply(function(){
-                                    d.reject(e.target.result);
+                                    d.reject(e.target.error);
                                 });
                             };
                             req.onsuccess = function(e) {
@@ -227,7 +222,12 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                         });
                     } else {
                         req = store.add(data);
-                        req.onsuccess = req.onerror = function(e) {
+                        req.onerror = function(e) {
+                            $rootScope.$apply(function(){
+                                d.reject(e.target.error);
+                            });
+                        };
+                        req.onsuccess = function(e) {
                             store.transaction.oncomplete = function() {
                                 $rootScope.$apply(function(){
                                     d.resolve(e.target.result);
@@ -258,14 +258,9 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                     if (angular.isArray(data)) {
                         data.forEach(function(item, i){
                             req = store.put(item);
-                            req.onnotify = function(e) {
-                               $rootScope.$apply(function(){
-                                    d.notify(e.target.result);
-                                }); 
-                            };
                             req.onerror = function(e) {
                                 $rootScope.$apply(function(){
-                                    d.reject(e.target.result);
+                                    d.reject(e.target.error);
                                 });
                             };
                             req.onsuccess = function(e) {
@@ -280,7 +275,12 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                         });
                     } else {
                         req = store.put(data);
-                        req.onsuccess = req.onerror = function(e) {
+                        req.onerror = function(e) {
+                            $rootScope.$apply(function(){
+                                d.reject(e.target.error);
+                            });
+                        };
+                        req.onsuccess = function(e) {
                             store.transaction.oncomplete = function() {
                                 $rootScope.$apply(function(){
                                     d.resolve(e.target.result);
@@ -306,7 +306,12 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                 var d = $q.defer();
                 return this.internalObjectStore(this.storeName, READWRITE).then(function(store){
                     var req = store.delete(key);
-                    req.onsuccess = req.onerror = function(e) {
+                    req.onerror = function(e) {
+                        $rootScope.$apply(function(){
+                            d.reject(e.target.error);
+                        });
+                    };
+                    req.onsuccess = function(e) {
                         store.transaction.oncomplete = function() {
                             $rootScope.$apply(function(){
                                 d.resolve(e.target.result);
@@ -330,7 +335,12 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                 var d = $q.defer();
                 return this.internalObjectStore(this.storeName, READWRITE).then(function(store){
                     var req = store.clear();
-                    req.onsuccess = req.onerror = function(e) {
+                    req.onerror = function(e) {
+                        $rootScope.$apply(function(){
+                            d.reject(e.target.error);
+                        });
+                    };
+                    req.onsuccess = function(e) {
                         store.transaction.oncomplete = function() {
                             $rootScope.$apply(function(){
                                 d.resolve(e.target.result);
@@ -378,7 +388,12 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                     } else {
                         req = store.get(keyOrIndex);
                     }
-                    req.onsuccess = req.onerror = function(e) {
+                    req.onerror = function(e) {
+                        $rootScope.$apply(function(){
+                            d.reject(e.target.error);
+                        });
+                    };
+                    req.onsuccess = function(e) {
                         $rootScope.$apply(function(){
                             d.resolve(e.target.result);
                         });
