@@ -418,13 +418,19 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                     var req;
                     if (store.getAll) {
                         req = store.getAll();
-                        req.onsuccess = req.onerror = function(e) {
+                        req.onerror = function(e) {
+                            d.reject(e.target.error);
+                        };
+                        req.onsuccess = function(e) {
                             $rootScope.$apply(function(){
                                 d.resolve(e.target.result);
                             });
                         };
                     } else {
                         req = store.openCursor();
+                        req.onerror = function(e) {
+                            d.reject(e.target.error);
+                        };
                         req.onsuccess = function(e) {
                             var cursor = e.target.result;
                             if(cursor){
@@ -435,9 +441,6 @@ angular.module('xc.indexedDB', []).provider('$indexedDB', function() {
                                     d.resolve(results);
                                 });
                             }
-                        };
-                        req.onerror = function(e) {
-                            d.reject(e.target.result);
                         };
                     }
                     return d.promise;
